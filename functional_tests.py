@@ -20,7 +20,8 @@ class NewVisitorTest(unittest.TestCase):
     def test_polls_site(self):  
         self.browser.get('http://127.0.0.1:8000/polls')   
         self.assertIn('Dzień dobry', self.browser.page_source)
-                
+
+
 
 if __name__ == '__main__':
     unittest.main()
