@@ -1,9 +1,31 @@
-<h1>{{ questions.question_text }}</h1>
-<ul>
-    {% for choice in questions.choice_set.all %}
-        <li>{{choice.choice_text}}</li>
-    {% endfor %}
-</ul>
-<p>
-    <a href="/polls/"> POWRÓT </a>
-</p>
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <title>Question</title>
+  </head>
+  <body>
+    <p>Odpowiedz na pytanie:</p>
+    <p>
+        <form action="{% url 'pollsapp:ksywkavote' questions.id %}" method="post">
+            {% csrf_token %}
+            <fieldset>
+                <legend>{{ questions.question_text }} - {{questions.publicate_date}} </legend>
+                {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+                {% if questions.choice_set.all %}
+                {% for choice in questions.choice_set.all %}
+                    <input type="radio" name="wybory" id="wybory{{ forloop.counter }}" value="{{ choice.id }}">
+                    <label for="wybory{{ forloop.counter }}">{{choice.choice_text}} </label>
+                {% endfor %}
+                {% else %}
+                    Nie ma CHOICE nie ma ODPOWIEDZI
+                {% endif %}
+            </fieldset>
+            <input type="submit" value="ZAGŁOSUJ">
+        </form> 
+    </p>
+    <p>
+        <a href="/polls/"> POWRÓT </a>
+    </p>
+  </body>
+</html>

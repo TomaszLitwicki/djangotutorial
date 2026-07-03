@@ -37,4 +37,18 @@ def results(request, question_id):
     return HttpResponse(response % question_id)
 
 def vote(request, question_id):
-    return HttpResponse("You're voting on question %s." % question_id)
+    question = get_object_or_404(Question, pk=question_id)
+    try:
+        selected_choice = question.choice_set.get(pk=request.POST["wybory"])
+    except (KeyError, Choice.DoesNotExist):
+        return render (
+            request, 
+                "polls/detail.html", 
+                {
+                    'questions': question,
+                    'error_message': "No i dupa, mówiłem, że nie przesłałeś formularza!"
+                },
+            )
+    else:
+        response = f"No i wszystko gra!"
+        return HttpResponse(response)
