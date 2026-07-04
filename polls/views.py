@@ -1,7 +1,9 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, HttpResponseRedirect #, Http404
 # from django.template import loader
 from .models import Question, Choice
+from django.urls import reverse
+from django.db.models import F
 
 # Create your views here.
 # METODA PRZEZ LOADERa
@@ -33,8 +35,8 @@ def detail (request, question_id):
 
 
 def results(request, question_id):
-    response = "You are looking at the results of question %s"
-    return HttpResponse(response % question_id)
+    question = get_object_or_404(Question, pk=question_id)
+    return render(request, "polls/results.html", {"questions": question})
 
 def vote(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
@@ -50,5 +52,6 @@ def vote(request, question_id):
                 },
             )
     else:
-        response = f"No i wszystko gra!"
-        return HttpResponse(response)
+        selected_choice.votes = F("votes") + 1
+        selected_choice.save()
+        return HttpResponseRedirect(reverse("pollsapp:ksywkaresults", args=(question.id,)))

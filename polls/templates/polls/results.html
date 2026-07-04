@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <title>RESULTATY</title>
+  </head>
+  <body>
+    <p>{{ questions.question_text }}</p>
+    <p>
+      <ul>
+        {% for choice in questions.choice_set.all %}
+          <li>
+            {{ choice.choice_text }} -- {{ choice.votes }} vote {{ choice.votes|pluralize }}
+          </li>
+        {% endfor %}
+      </ul>
+    </p>
+    <p>
+      <a href="{% url 'pollsapp:ksywkadetail' questions.id %}"> Głosujesz jeszcze rez? </a>
+      <br>
+      <a href="{% url 'pollsapp:index'%}"> A może wracasz do pytań? </a>
+    </p>
+  </body>
+</html>
