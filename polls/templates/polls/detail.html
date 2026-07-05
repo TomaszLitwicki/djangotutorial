@@ -7,13 +7,13 @@
   <body>
     <p>Odpowiedz na pytanie:</p>
     <p>
-        <form action="{% url 'pollsapp:ksywkavote' questions.id %}" method="post">
+        <form action="{% url 'pollsapp:ksywkavote' question.id %}" method="post">
             {% csrf_token %}
             <fieldset>
-                <legend>{{ questions.question_text }} - {{questions.publicate_date}} </legend>
+                <legend>{{ question.question_text }} - {{question.publicate_date}} </legend>
                 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-                {% if questions.choice_set.all %}
-                {% for choice in questions.choice_set.all %}
+                {% if question.choice_set.all %}
+                {% for choice in question.choice_set.all %}
                     <input type="radio" name="wybory" id="wybory{{ forloop.counter }}" value="{{ choice.id }}">
                     <label for="wybory{{ forloop.counter }}">{{choice.choice_text}} </label>
                 {% endfor %}
