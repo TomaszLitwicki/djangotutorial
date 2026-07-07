@@ -5,6 +5,7 @@ from .models import Question, Choice
 from django.urls import reverse
 from django.db.models import F
 from django.views import generic
+from django.utils import timezone
 
 # Create your views here.
 # METODA PRZEZ LOADERa
@@ -44,7 +45,7 @@ class IndexView(generic.ListView):
     context_object_name = "question_list"
 
     def get_queryset(self):
-        return Question.objects.all()
+        return Question.objects.all().filter(publicate_date__lte=timezone.now())
     
 class QuestionDetailView(generic.DetailView):
     model = Question

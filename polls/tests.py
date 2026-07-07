@@ -2,6 +2,7 @@ import datetime
 from django.test import TestCase
 from django.utils import timezone
 from .models import Question
+from django.urls import reverse
 
 # Create your tests here.
 class QuestionModelTest(TestCase):
@@ -30,3 +31,38 @@ class PollsReturnsText(TestCase):
         self.assertContains(response, 'Dzień dobry')
 
 
+def create_question(quest_txt, ddd):
+    time = timezone.now() + datetime.timedelta(days=ddd)
+    return Question.objects.create(question_text = quest_txt, publicate_date = time)
+
+class QuestionIndexViewTests(TestCase):
+    def test_no_questions(self):
+        response = self.client.get(reverse("pollsapp:index"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "nie" or "Nie")
+        self.assertQuerySetEqual(response.context["question_list"], [])
+
+    def test_past_question(self):
+        question = create_question("Dawne pytanie", -30)
+        response = self.client.get(reverse("pollsapp:index"))
+        self.assertQuerySetEqual(response.context["question_list"],[question])
+
+    def test_future_question(self):
+        create_question("Przyszłe pytanie", +30)
+        response = self.client.get(reverse("pollsapp:index"))
+        self.assertContains(response, "nie" or "Nie")
+        self.assertQuerySetEqual(response.context["question_list"],[])
+
+    def test_futre_and_past_question(self):
+        question = create_question("przeszłe pytanie", -30) 
+        create_question("przyszłe pytanie", +30)
+        response = self.client.get(reverse("pollsapp:index"))
+        self.assertQuerySetEqual(response.context['question_list'],[question])
+
+    def test_two_past_question(self):
+        questions = [
+            create_question("Pierwsze pytanie", -10),
+            create_question("Drugie pytanie", -20)
+        ]
+        response = self.client.get(reverse("pollsapp:index"))
+        self.assertQuerySetEqual(response.context["question_list"],questions,ordered=False)
