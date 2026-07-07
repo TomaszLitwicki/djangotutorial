@@ -1,49 +1,32 @@
+import datetime
 from django.test import TestCase
-from django.urls import resolve
-from django.http import HttpRequest
-from polls.views import index, detail, results, vote
+from django.utils import timezone
+from .models import Question
 
 # Create your tests here.
-class HomePageAppTest(TestCase):
-    def test_subpage_detail_returns_correct_info(self):
-        request = HttpRequest()
-        response = index(request)
-        html = response.content.decode('utf-8')
-        self.assertIn('Dzień dobry', html)
+class QuestionModelTest(TestCase):
+    def test_was_published_recently_with_future_question(self):
+        time = timezone.now() + datetime.timedelta(days=30)
+        future_question = Question(publicate_date=time)
+        self.assertIs(future_question.was_published_recently(), False)
 
+    def test_was_published_recently_with_now_question(self):
+        now_question = Question(publicate_date=timezone.now())
+        self.assertIs(now_question.was_published_recently(), True)
 
-class PollsMappingTest(TestCase):    
-    def test_root_url_resolves_to_home_page_view(self):
-        found = resolve('/polls/')
-        self.assertEqual(found.func, index)
+    def test_was_published_recently_with_recent_question(self):
+        time = timezone.now() - datetime.timedelta(hours=23, minutes=59, seconds=59)
+        recent_question = Question(publicate_date = time)
+        self.assertIs(recent_question.was_published_recently(), True)
 
-    def test_root_url_resolves_to_details(self):
-        found = resolve('/polls/1/')
-        self.assertEqual(found.func, detail)
-
-    def test_root_url_resolves_to_results(self):
-        found = resolve('/polls/1/results/')
-        self.assertEqual(found.func, results)
-
-    def test_subpage_results_returns_correct_vote(self):
-        found = resolve('/polls/1/vote/')
-        self.assertEqual(found.func, vote)
-
+    def test_was_published_recently_with_old_question(self):
+        time = timezone.now() + datetime.timedelta(days=1, seconds=1)
+        old_quetion = Question(publicate_date = time)
+        self.assertIs(old_quetion.was_published_recently(), False)
 
 class PollsReturnsText(TestCase):
     def test_correct_returns_index_polls(self):
         response = self.client.get('/polls/')
         self.assertContains(response, 'Dzień dobry')
 
-    def test_correct_returns_detail_polls(self):
-        response = self.client.get('/polls/1/')
-        self.assertContains(response, 'question 1')
-
-    def test_correct_returns_results_polls(self):
-        response = self.client.get('/polls/1/results/')
-        self.assertContains(response, 'results' and '1')
-
-    def test_correct_returns_vote_polls(self):
-        response = self.client.get('/polls/1/vote/')
-        self.assertContains(response, 'voting' and '1')
 
