@@ -66,3 +66,20 @@ class QuestionIndexViewTests(TestCase):
         ]
         response = self.client.get(reverse("pollsapp:index"))
         self.assertQuerySetEqual(response.context["question_list"],questions,ordered=False)
+
+
+class QuestionDetailViewTest(TestCase):
+    def test_future_question(self):
+        future_question = create_question("Przyszłe pytanie", +5)
+        url = reverse("pollsapp:ksywkadetail", args=(future_question.id,))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_past_question(self):
+        past_question = create_question("Przeszłe pytanie", -5)
+        url = reverse("pollsapp:ksywkadetail", args=(past_question.id,))
+        response = self.client.get(url)
+        print(f"moja wiadomość: {response.context['object']}")
+        zalogowany = response.context['user']
+        print(f"Użytkownik jest zalogowany - {zalogowany.is_authenticated}")
+        self.assertContains(response, past_question.question_text)

@@ -3,4 +3,4 @@ from django.http import HttpResponse
 
 # Create your views here.
 def index(request):
-    return HttpResponse('Strona Główna')
+    return HttpResponse('Strona Główna<br><a href=/polls/>Przejrzyj pytania</a>')
