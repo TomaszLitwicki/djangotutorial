@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <title>Zaloguj się</title>
+  </head>
+  <body>
+    <h2>Logowanie do systemu</h2>
+    
+    {% if form.errors %}
+      <p style="color: red;">Nazwa użytkownika lub hasło są niepoprawne. Spróbuj ponownie.</p>
+    {% endif %}
+
+    <form method="post" action="{% url 'login' %}">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <input type="submit" value="Zaloguj">
+    </form>
+    
+    <p><a href="/">Powrót do strony głównej</a></p>
+  </body>
+</html>

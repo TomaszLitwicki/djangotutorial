@@ -6,6 +6,8 @@ from django.urls import reverse
 from django.db.models import F
 from django.views import generic
 from django.utils import timezone
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 # METODA PRZEZ LOADERa
@@ -40,24 +42,25 @@ from django.utils import timezone
 #     question = get_object_or_404(Question, pk=question_id)
 #     return render(request, "polls/results.html", {"questions": question})
 
-class IndexView(generic.ListView):
+class IndexView(LoginRequiredMixin, generic.ListView):
     template_name = "polls/index.html"
     context_object_name = "question_list"
 
     def get_queryset(self):
         return Question.objects.all().filter(publicate_date__lte=timezone.now())
     
-class QuestionDetailView(generic.DetailView):
+class QuestionDetailView(LoginRequiredMixin ,generic.DetailView):
     model = Question
     template_name = "polls/detail.html"
 
     def get_queryset(self):
         return Question.objects.all().filter(publicate_date__lte=timezone.now())
 
-class QuestionResultsView(generic.DetailView):
+class QuestionResultsView(LoginRequiredMixin ,generic.DetailView):
     model = Question
     template_name = "polls/results.html"
 
+@login_required
 def vote(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     try:

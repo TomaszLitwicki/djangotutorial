@@ -7,7 +7,23 @@
     <link rel="stylesheet" href="{% static "polls/style.css" %}">
   </head>
   <body>
-    <p>Dzień dobry :)</p>
+  
+    <div>
+      {% if user.is_authenticated %}
+        <p>Dzień dobry, <strong>{{ user.username }}</strong>! Fajnie, że jesteś.</p>
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit">Wyloguj się</button>
+        </form>
+      {% else %}
+        <p>Witaj nieznajomy gościu!</p>
+        <p>
+            <a href="{% url 'login' %}">Zaloguj się</a> lub 
+            <a href="{% url 'signup' %}">Zarejestruj się</a>, aby w pełni korzystać z systemu.
+        </p>
+      {% endif %}
+    </div>
+
     <p>
       {% if question_list %}
         <ul>
